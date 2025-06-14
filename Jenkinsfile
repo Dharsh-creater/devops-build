@@ -1,37 +1,41 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_HUB_REPO = 'dharsh177/devops-prod'
+        DOCKER_HUB_USERNAME = 'dharsh177'
+    }
+
     stages {
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/Dharsh-creater/devops-build.git'
+                git url: 'https://github.com/Dharsh-creater/devops-build.git', branch: 'main'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                dir('my-app') {
-                    sh 'npm install'
-                }
+                sh 'cd my-app && npm install'
             }
         }
 
         stage('Build React App') {
             steps {
-                dir('my-app') {
-                    sh 'npm run build'
-                }
+                sh 'cd my-app && npm run build'
             }
         }
 
         stage('Docker Build & Push') {
             steps {
-                sh 'docker build -t dharsh177/devops-app:latest .'
-                withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_PASSWORD')]) {
-                    sh 'echo $DOCKER_PASSWORD | docker login -u dharsh177 --password-stdin'
-                    sh 'docker push dharsh177/devops-app:latest'
+                withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        docker build -t dharsh177/devops-prod:latest .
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push $DOCKER_HUB_REPO:latest
+                    '''
                 }
             }
         }
     }
 }
+
