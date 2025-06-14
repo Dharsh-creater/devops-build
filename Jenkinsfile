@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO = 'dharsh177/devops-prod'
-        DOCKER_HUB_USERNAME = 'dharsh177'
+        DOCKER_HUB_REPO = 'docker177/devops-prod'
+        DOCKER_HUB_USERNAME = 'docker177'
     }
 
     stages {
@@ -15,13 +15,13 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'cd my-app && npm install'
+                sh 'npm install'
             }
         }
 
         stage('Build React App') {
             steps {
-                sh 'cd my-app && npm run build'
+                sh 'npm run build'
             }
         }
 
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                        docker build -t dharsh177/devops-prod:latest .
+                        docker build -t $DOCKER_HUB_REPO:latest .
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push $DOCKER_HUB_REPO:latest
                     '''
