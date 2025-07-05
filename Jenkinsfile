@@ -2,19 +2,20 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO = 'docker177/devops-prod'
-        DOCKER_HUB_USERNAME = 'docker177'
+        DOCKER_HUB_REPO_DEV = 'dharsh177/devops-pub'
+        DOCKER_HUB_REPO_PROD = 'dharsh177/devops-pri'
     }
 
     stages {
         stage('Clone Repo') {
             steps {
-                git url: 'https://github.com/Dharsh-creater/devops-build.git', branch: 'main'
+                checkout scm
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                sh 'node -v'
                 sh 'npm install'
             }
         }
@@ -26,15 +27,42 @@ pipeline {
         }
 
         stage('Docker Build & Push') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        docker build -t $DOCKER_HUB_REPO:latest .
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push $DOCKER_HUB_REPO:latest
-                    '''
-                }
+            when {
+                branch 'dev'
             }
+            steps {
+                sh './build.sh'
+            }
+        }
+
+        stage('Deploy to Server') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                sh './deploy.sh'
+            }
+        }
+
+        stage('Build & Push Prod') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh 'docker build -t devops-app:latest .'
+                sh 'docker tag devops-app:latest $DOCKER_HUB_REPO_PROD:latest'
+                sh 'docker push $DOCKER_HUB_REPO_PROD:latest'
+                sh './deploy.sh'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Build finished!'
+        }
+        failure {
+            echo 'Build failed!'
         }
     }
 }
