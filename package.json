@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "name": "my-app",
+=======
+  "name": "react-app-temp",
+>>>>>>> a384158f (Initial commit)
   "version": "0.1.0",
   "private": true,
   "dependencies": {

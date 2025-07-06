@@ -1,6 +1,13 @@
 version: "3"
 services:
+<<<<<<< HEAD
   reactapp:
     build: .
     ports:
       - "80:80"
+=======
+  web:
+    build: .
+    ports:
+      - "8080:80"
+>>>>>>> a384158f (Initial commit)
