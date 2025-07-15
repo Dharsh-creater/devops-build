@@ -12,13 +12,13 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Build') {
             steps {
                 sh 'docker build -t dharsh177/devops-build:latest .'
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Docker Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-pass', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
@@ -26,6 +26,15 @@ pipeline {
                     sh 'docker push dharsh177/devops-pub:latest'
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Build finished!"
+        }
+        failure {
+            echo "Build failed!"
         }
     }
 }
