@@ -16,7 +16,8 @@ pipeline {
             steps {
                 sh 'rm -rf node_modules package-lock.json'
                 sh 'npm install'
-                sh 'chmod -R 755 node_modules/.bin'
+                sh 'chmod -R 755 node_modules/.bin'      // <-- fixes permission denied
+                sh 'ls -l node_modules/.bin'             // optional: debug list permissions
             }
         }
 
@@ -26,11 +27,16 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t dharsh177/devops-build:latest .'
+            }
+        }
+
+        stage('Docker Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-pass', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh 'docker build -t dharsh177/devops-build:latest .'
                     sh 'docker tag dharsh177/devops-build:latest dharsh177/devops-pub:latest'
                     sh 'docker push dharsh177/devops-pub:latest'
                 }
