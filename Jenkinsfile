@@ -2,67 +2,30 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO_DEV = 'dharsh177/devops-pub'
-        DOCKER_HUB_REPO_PROD = 'dharsh177/devops-pri'
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-pass')
     }
 
     stages {
-        stage('Clone Repo') {
+        stage('Clone') {
             steps {
-                checkout scm
+                git branch: 'dev', url: 'https://github.com/Dharsh-creater/devops-build.git'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                sh 'node -v'
-                sh 'npm install'
+                sh 'docker build -t dharsh177/devops-build:latest .'
             }
         }
 
-        stage('Build React App') {
+        stage('Push to Docker Hub') {
             steps {
-                sh 'npm run build'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-pass', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker tag dharsh177/devops-build:latest dharsh177/devops-pub:latest'
+                    sh 'docker push dharsh177/devops-pub:latest'
+                }
             }
-        }
-
-        stage('Docker Build & Push') {
-            when {
-                branch 'dev'
-            }
-            steps {
-                sh './build.sh'
-            }
-        }
-
-        stage('Deploy to Server') {
-            when {
-                branch 'dev'
-            }
-            steps {
-                sh './deploy.sh'
-            }
-        }
-
-        stage('Build & Push Prod') {
-            when {
-                branch 'main'
-            }
-            steps {
-                sh 'docker build -t devops-app:latest .'
-                sh 'docker tag devops-app:latest $DOCKER_HUB_REPO_PROD:latest'
-                sh 'docker push $DOCKER_HUB_REPO_PROD:latest'
-                sh './deploy.sh'
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'Build finished!'
-        }
-        failure {
-            echo 'Build failed!'
         }
     }
 }
