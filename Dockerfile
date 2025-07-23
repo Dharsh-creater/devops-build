@@ -6,9 +6,12 @@ COPY . .
 RUN npm run build
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Stage 2: Serve
 FROM nginx:alpine
 =======
+=======
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
 # Stage 2: Serve with nginx
 # Build stage
 FROM node:18-alpine as build
@@ -20,6 +23,9 @@ RUN npm run build
 
 # Production stage
 FROM nginx:stable-alpine
+<<<<<<< HEAD
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
+=======
 >>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80

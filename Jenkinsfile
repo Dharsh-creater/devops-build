@@ -7,6 +7,15 @@ pipeline {
 
     stages {
         stage('Checkout SCM') {
+<<<<<<< HEAD
+            steps {
+                git branch: 'dev', url: 'https://github.com/Dharsh-creater/devops-build.git'
+            }
+        }
+
+        stage('Clone Repo') {
+=======
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
             steps {
                 git branch: 'dev', url: 'https://github.com/Dharsh-creater/devops-build.git'
             }
@@ -23,8 +32,13 @@ pipeline {
                 sh 'rm -rf node_modules package-lock.json'
                 sh 'npm install'
 <<<<<<< HEAD
+<<<<<<< HEAD
                 sh 'chmod -R 755 node_modules/.bin'      // <-- fixes permission denied
                 sh 'ls -l node_modules/.bin'             // optional: debug list permissions
+=======
+                sh 'chmod -R 755 node_modules/.bin'       // fix permissions
+                sh 'ls -l node_modules/.bin'              // show permissions (for debug)
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
 =======
                 sh 'chmod -R 755 node_modules/.bin'       // fix permissions
                 sh 'ls -l node_modules/.bin'              // show permissions (for debug)
@@ -38,6 +52,7 @@ pipeline {
             }
         }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         stage('Docker Build') {
             steps {
@@ -54,6 +69,10 @@ pipeline {
 =======
         stage('Docker Build & Push') {
             steps {
+=======
+        stage('Docker Build & Push') {
+            steps {
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
                 script {
                     dockerImage = docker.build("dharsh-creator/devops-build:dev")
                     docker.withRegistry('', DOCKER_HUB_CREDENTIALS) {
@@ -77,6 +96,9 @@ pipeline {
                     docker.withRegistry('', DOCKER_HUB_CREDENTIALS) {
                         dockerImageProd.push()
                     }
+<<<<<<< HEAD
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
+=======
 >>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
                 }
             }
@@ -89,6 +111,9 @@ pipeline {
         }
         failure {
             echo "Build failed!"
+        }
+        success {
+            echo 'Build succeeded!'
         }
         success {
             echo 'Build succeeded!'

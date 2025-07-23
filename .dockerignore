@@ -1,4 +1,8 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+nginx
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
 =======
 nginx
 >>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
@@ -9,7 +13,11 @@ build
 Dockerfile
 docker-compose.yml
 <<<<<<< HEAD
+<<<<<<< HEAD
 README.md
+=======
+
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
 =======
 
 >>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87

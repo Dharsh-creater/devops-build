@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "react-app-temp",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -37,3 +37,4 @@
     ]
   }
 }
+
