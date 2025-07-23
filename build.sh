@@ -1,3 +1,3 @@
 #!/bin/bash
-docker build -t devops-build-app .
+docker build -t dharsh177/devops-build:latest .
 
