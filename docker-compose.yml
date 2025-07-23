@@ -1,6 +1,16 @@
+<<<<<<< HEAD
 version: '3'
 services:
   react-app:
     build: .
     ports:
       - "80:80"
+=======
+version: "3"
+services:
+  app:
+    build: .
+    ports:
+      - "80:80"
+
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87

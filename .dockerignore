@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+nginx
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
 node_modules
 build
 .git
 .gitignore
 Dockerfile
 docker-compose.yml
+<<<<<<< HEAD
 README.md
+=======
+
+>>>>>>> c55fed3a34a6c63beaec023dca49b953b518bb87
