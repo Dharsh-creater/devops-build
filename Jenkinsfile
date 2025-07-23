@@ -16,8 +16,8 @@ pipeline {
             steps {
                 sh 'rm -rf node_modules package-lock.json'
                 sh 'npm install'
-                sh 'chmod -R 755 node_modules/.bin'      // <-- fixes permission denied
-                sh 'ls -l node_modules/.bin'             // optional: debug list permissions
+                sh 'chmod -R 755 node_modules/.bin'
+                sh 'ls -l node_modules/.bin'
             }
         }
 
@@ -39,6 +39,13 @@ pipeline {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     sh 'docker tag dharsh177/devops-build:latest dharsh177/devops-pub:latest'
                     sh 'docker push dharsh177/devops-pub:latest'
+                    // Optional: Push to prod if on master branch
+                    script {
+                        if (env.BRANCH_NAME == 'master') {
+                            sh 'docker tag dharsh177/devops-build:latest dharsh177/devops-prod:latest'
+                            sh 'docker push dharsh177/devops-prod:latest'
+                        }
+                    }
                 }
             }
         }
@@ -53,4 +60,3 @@ pipeline {
         }
     }
 }
-
