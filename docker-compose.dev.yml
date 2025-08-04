@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  react-app:
+    image: dharsh177/devops-react-app-dev:latest
+    container_name: devops-react-app-dev
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge 
