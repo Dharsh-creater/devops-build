@@ -6,6 +6,8 @@ pipeline {
         DEV_REPO = 'devops-react-app-dev'
         PROD_REPO = 'devops-react-app-prod'
         GITHUB_REPO = 'Dharsh-creater/devops-build'
+        AWS_SERVER_IP = '3.87.143.211'  // Your EC2 public IP
+        AWS_SSH_KEY = 'devops-key'
     }
     
     stages {
@@ -95,6 +97,27 @@ pipeline {
             }
         }
         
+        stage('Deploy to AWS') {
+            steps {
+                script {
+                    echo "🚀 Deploying to AWS EC2..."
+                    withCredentials([sshUserPrivateKey(credentialsId: 'aws-ssh-key', keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${env.AWS_SERVER_IP} '
+                                cd /home/ec2-user/app
+                                docker pull ${env.DOCKER_IMAGE}
+                                docker stop react-app || true
+                                docker rm react-app || true
+                                docker run -d --name react-app --restart unless-stopped -p 80:80 -e NODE_ENV=production ${env.DOCKER_IMAGE}
+                                sleep 10
+                                curl -f http://localhost/health || exit 1
+                            '
+                        """
+                    }
+                }
+            }
+        }
+        
         stage('Health Check') {
             steps {
                 script {
@@ -124,6 +147,12 @@ pipeline {
                             exit 1
                         fi
                     """
+                    
+                    // AWS Health Check
+                    echo "🏥 Performing AWS health check..."
+                    sh "curl -f http://${env.AWS_SERVER_IP}/health"
+                    echo "✅ AWS deployment successful!"
+                    echo "🌐 Application URL: http://${env.AWS_SERVER_IP}"
                 }
             }
         }
@@ -139,7 +168,8 @@ pipeline {
                 def environment = env.BRANCH_NAME == 'master' ? 'PRODUCTION' : 'DEVELOPMENT'
                 echo "Pipeline completed successfully for ${environment} environment"
                 echo "Image: ${env.DOCKER_IMAGE}"
-                echo "Application URL: http://localhost:${env.BRANCH_NAME == 'master' ? '3000' : '3001'}"
+                echo "Local Application URL: http://localhost:${env.BRANCH_NAME == 'master' ? '3000' : '3001'}"
+                echo "AWS Application URL: http://${env.AWS_SERVER_IP}"
             }
         }
         failure {
@@ -149,4 +179,4 @@ pipeline {
             }
         }
     }
-} 
+}
