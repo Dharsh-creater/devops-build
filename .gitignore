@@ -5,7 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Production builds
-/build
+# /build  # Commented out to allow build directory for Jenkins pipeline
 /dist
 
 # Environment files
